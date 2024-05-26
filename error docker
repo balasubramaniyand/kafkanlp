@@ -1,0 +1,40 @@
+root@opexwise-ml3:/home/balasubramaniyan.d/ml/kafka_nlp# docker-compose up -d
+yaml: line 16: could not find expected ':'
+root@opexwise-ml3:/home/balasubramaniyan.d/ml/kafka_nlp# cat docker-compose.yml 
+version: '3.3'
+networks:
+  iopex_network:
+    external: true
+services:
+  nlp_api:    
+    image: iopexlabs/opexwiseml:nlp.1
+    ports:
+      - "8051:80"
+    environment:
+      APP_URL: "http://10.10.50.36:8051"
+      FAST_API_MODEL_TRAINING: "http://10.10.50.36:8052/"
+      ML_MODEL_TRAINING_URL: 'pycaret/training'
+      # SENTIMENT_ANALYSIS_URL: 'http://10.10.50.33:4024/sentiment_analysis'
+      SENTIMENT_ANALYSIS_URL= "http://10.10.50.36:8060/sentiment_analysis"
+      KAFKA_SERVER_URL: "10.10.50.36:9092"
+    networks:
+      - 'iopex_network'
+    depends_on:
+      - text_classification_api_db
+    restart: on-failure:5
+    volumes:
+      - "./logger:/var/opt/logger"
+      - "./media:/var/opt/media"
+  text_classification_api_db:
+    image: postgres:12
+    networks:
+      - 'iopex_network'
+    restart: on-failure:5
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: text_classification
+      POSTGRES_PASSWORD: iopex@123
+
+root@opexwise-ml3:/home/balasubramaniyan.d/ml/kafka_nlp# 
+
