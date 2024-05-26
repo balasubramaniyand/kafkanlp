@@ -4,6 +4,7 @@ networks:
     external: true
 services:
   nlp_api:
+build: .
     image: iopexlabs/opexwiseml:nlp.1
     ports:
       - "8051:80"
